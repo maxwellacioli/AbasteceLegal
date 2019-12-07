@@ -1,5 +1,6 @@
 package com.maxwell.AbasteceLegal.controller;
 
+import com.maxwell.AbasteceLegal.util.LoggedUser;
 import com.maxwell.AbasteceLegal.util.LoginData;
 import com.maxwell.AbasteceLegal.model.Role;
 import com.maxwell.AbasteceLegal.util.RoleName;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -50,6 +52,12 @@ public class AuthRestAPIs {
                         loginData.getPassword()
                 )
         );
+
+        //Setting loggedUser
+        Optional<User> optional = userRepository.findByUsername(loginData.getUsername());
+        optional.ifPresent( user -> {
+            LoggedUser.getInstance().setUser(user);
+        });
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
