@@ -3,6 +3,7 @@ package com.maxwell.AbasteceLegal.controller;
 import com.maxwell.AbasteceLegal.model.Vehicle;
 import com.maxwell.AbasteceLegal.repository.UserRepository;
 import com.maxwell.AbasteceLegal.repository.VehicleRepository;
+import com.maxwell.AbasteceLegal.util.LoggedUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,11 @@ public class VehicleController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity create(@PathVariable (value = "userId") Long userId,
                                  @RequestBody Vehicle vehicle) {
+
+        if(!LoggedUser.getInstance().getUser().getId().equals(userId)) {
+            return ResponseEntity.badRequest()
+                    .body("The current logged user has no permission to create a vehicle to another user");
+        }
 
         return userRepository.findById(userId).map(user -> {
             vehicle.setUser(user);
