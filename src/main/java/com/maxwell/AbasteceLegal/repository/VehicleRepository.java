@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
-    Page<Vehicle> findByLicensePlate (String licensePlate, Pageable pageable);
     Page<Vehicle> findByUserId(Long userId, Pageable pageable);
+    Boolean existsByLicensePlate(String licensePlate);
 }

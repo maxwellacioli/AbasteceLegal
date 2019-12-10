@@ -1,8 +1,9 @@
 package com.maxwell.AbasteceLegal.controller;
 
-import com.maxwell.AbasteceLegal.util.LoggedUser;
+import com.maxwell.AbasteceLegal.security.services.UserPrinciple;
 import com.maxwell.AbasteceLegal.util.LoginData;
 import com.maxwell.AbasteceLegal.model.Role;
+import com.maxwell.AbasteceLegal.util.LoginResponse;
 import com.maxwell.AbasteceLegal.util.RoleName;
 import com.maxwell.AbasteceLegal.model.User;
 import com.maxwell.AbasteceLegal.repository.RoleRepository;
@@ -53,16 +54,11 @@ public class AuthRestAPIs {
                 )
         );
 
-        //Setting loggedUser
-        Optional<User> optional = userRepository.findByUsername(loginData.getUsername());
-        optional.ifPresent( user -> {
-            LoggedUser.getInstance().setUser(user);
-        });
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserPrinciple userPrinciple = (UserPrinciple)authentication.getPrincipal();
 
-        String jwt = jwtProvider.generateJwtToken(authentication);
-        return ResponseEntity.ok("Bearer " + jwt);
+        String token = jwtProvider.generateJwtToken(authentication);
+        return ResponseEntity.ok(new LoginResponse(token, userPrinciple.getId(), userPrinciple.getUsername()));
     }
 
     @PostMapping("/signup")
