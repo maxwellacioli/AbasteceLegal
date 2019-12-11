@@ -58,7 +58,8 @@ public class AuthRestAPIs {
         UserPrinciple userPrinciple = (UserPrinciple)authentication.getPrincipal();
 
         String token = jwtProvider.generateJwtToken(authentication);
-        return ResponseEntity.ok(new LoginResponse(token, userPrinciple.getId(), userPrinciple.getUsername()));
+        return ResponseEntity.ok(new LoginResponse(token, userPrinciple.getId(), userPrinciple.getUsername(),
+                userPrinciple.getName(), userPrinciple.getEmail()));
     }
 
     @PostMapping("/signup")

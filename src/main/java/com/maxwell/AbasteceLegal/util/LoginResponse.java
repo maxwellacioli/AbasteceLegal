@@ -3,27 +3,29 @@ package com.maxwell.AbasteceLegal.util;
 import lombok.Getter;
 import lombok.Setter;
 
+@Setter
+@Getter
 public class LoginResponse {
 
-    @Setter
-    @Getter
     private String token;
 
-    @Getter
     private final String type = "Bearer";
 
-    @Setter
-    @Getter
-    private Long userId;
+    private Long id;
 
-    @Setter
-    @Getter
     private String username;
 
-    public LoginResponse(String token, Long userId, String username) {
+    private String name;
+
+    private String email;
+
+    public LoginResponse(String token, Long id, String username,
+                            String name, String email) {
         this.token = token;
-        this.userId = userId;
+        this.id = id;
         this.username = username;
+        this.name = name;
+        this.email = email;
     }
 
 }
