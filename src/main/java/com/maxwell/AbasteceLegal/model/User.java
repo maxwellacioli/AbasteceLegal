@@ -17,6 +17,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class User implements Serializable, UserDetails {
     /**
      *
@@ -61,21 +61,23 @@ public class User implements Serializable, UserDetails {
     @Size(min=6, max = 100)
     private String password;
 
-    @JsonIgnore
-    @Transient
-    private Collection<? extends GrantedAuthority> authorities;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", 
     	joinColumns = @JoinColumn(name = "user_id"), 
     	inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    @JsonIgnore
+    @Transient
+    private Collection<? extends GrantedAuthority> authorities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities = roles.stream().map(role ->
+        authorities = this.roles.stream().map(role ->
                 new SimpleGrantedAuthority(role.getName().name())
         ).collect(Collectors.toList());
+
+        return authorities;
     }
 
     @JsonIgnore
