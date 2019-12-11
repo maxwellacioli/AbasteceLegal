@@ -1,6 +1,6 @@
 package com.maxwell.AbasteceLegal.security.jwt;
 
-import com.maxwell.AbasteceLegal.security.services.UserPrinciple;
+import com.maxwell.AbasteceLegal.model.User;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +23,10 @@ public class JwtProvider {
 
     public String generateJwtToken(Authentication authentication) {
 
-        UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
+        User user = (User) authentication.getPrincipal();
 
         return Jwts.builder()
-		                .setSubject((userPrincipal.getUsername()))
+		                .setSubject((user.getUsername()))
 		                .setIssuedAt(new Date())
 		                .setExpiration(new Date((new Date()).getTime() + jwtExpiration*1000))
 		                .signWith(SignatureAlgorithm.HS512, jwtSecret)

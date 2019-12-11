@@ -21,3 +21,30 @@ create table users
     username varchar(50),
     primary key (id)
 );
+
+
+create table trips
+(
+    id  bigserial not null,
+    city varchar(255),
+    date timestamp,
+    description varchar(255),
+    fuel_consumption float4 not null,
+    fuel_quantity float4 not null,
+    fuel_type varchar(255),
+    trip_distance float4 not null,
+    vehicle_id int8 not null,
+    primary key (id)
+);
+
+create table vehicles
+(
+    id  bigserial not null,
+    current_total_distance float4 not null,
+    fuel_type varchar(255),
+    license_plate varchar(255),
+    model varchar(255),
+    vehicle_type varchar(255),
+    user_id int8 not null,
+    primary key (id)
+);

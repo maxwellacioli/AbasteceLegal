@@ -1,9 +1,9 @@
 package com.maxwell.AbasteceLegal.controller;
 
+import com.maxwell.AbasteceLegal.model.User;
 import com.maxwell.AbasteceLegal.model.Vehicle;
 import com.maxwell.AbasteceLegal.repository.UserRepository;
 import com.maxwell.AbasteceLegal.repository.VehicleRepository;
-import com.maxwell.AbasteceLegal.security.services.UserPrinciple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -45,9 +45,9 @@ public class VehicleController {
                                  @RequestBody Vehicle vehicle) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserPrinciple userPrinciple = (UserPrinciple)authentication.getPrincipal();
+        User user = (User)authentication.getPrincipal();
 
-        if(!userPrinciple.getId().equals(userId)) {
+        if(!user.getId().equals(userId)) {
             return ResponseEntity.badRequest()
                     .body("The current logged user has no permission to create a vehicle to another user");
         }
@@ -57,8 +57,8 @@ public class VehicleController {
                     .body("License plate " + vehicle.getLicensePlate() + " already exists.");
         }
 
-        return userRepository.findById(userId).map(user -> {
-            vehicle.setUser(user);
+        return userRepository.findById(userId).map(u -> {
+            vehicle.setUser(u);
             Vehicle vehicleSaved = vehicleRepository.save(vehicle);
             return ResponseEntity.ok().body(vehicleSaved);
         }).orElse(ResponseEntity.notFound().build());

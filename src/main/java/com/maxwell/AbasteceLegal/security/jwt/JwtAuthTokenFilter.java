@@ -1,12 +1,12 @@
 package com.maxwell.AbasteceLegal.security.jwt;
 
+import com.maxwell.AbasteceLegal.model.User;
 import com.maxwell.AbasteceLegal.security.services.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -37,9 +37,11 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             if (jwt!=null && tokenProvider.validateJwtToken(jwt)) {
                 String username = tokenProvider.getUserNameFromJwtToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                User user = (User) userDetailsService.loadUserByUsername(username);
+
                 UsernamePasswordAuthenticationToken authentication 
-                		= new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                		= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);

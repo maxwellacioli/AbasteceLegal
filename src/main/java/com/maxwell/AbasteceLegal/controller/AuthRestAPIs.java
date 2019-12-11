@@ -1,14 +1,13 @@
 package com.maxwell.AbasteceLegal.controller;
 
-import com.maxwell.AbasteceLegal.security.services.UserPrinciple;
-import com.maxwell.AbasteceLegal.util.LoginData;
 import com.maxwell.AbasteceLegal.model.Role;
-import com.maxwell.AbasteceLegal.util.LoginResponse;
-import com.maxwell.AbasteceLegal.util.RoleName;
 import com.maxwell.AbasteceLegal.model.User;
 import com.maxwell.AbasteceLegal.repository.RoleRepository;
 import com.maxwell.AbasteceLegal.repository.UserRepository;
 import com.maxwell.AbasteceLegal.security.jwt.JwtProvider;
+import com.maxwell.AbasteceLegal.util.LoginData;
+import com.maxwell.AbasteceLegal.util.LoginResponse;
+import com.maxwell.AbasteceLegal.util.RoleName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +15,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -87,7 +84,7 @@ public class AuthRestAPIs {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> index(@AuthenticationPrincipal UserPrinciple userPrinciple) {
-        return ResponseEntity.ok(userPrinciple);
+    public ResponseEntity<?> index(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(user);
     }
 }
