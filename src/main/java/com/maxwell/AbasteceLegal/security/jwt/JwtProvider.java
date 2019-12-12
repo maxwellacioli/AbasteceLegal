@@ -18,7 +18,7 @@ public class JwtProvider {
     @Value("${token.private.key}")
     private String jwtSecret;
 
-    @Value("${token.expiration}")
+    @Value("${token.expiration.in.milliseconds}")
     private int jwtExpiration;
 
     public String generateJwtToken(Authentication authentication) {
@@ -28,7 +28,7 @@ public class JwtProvider {
         return Jwts.builder()
 		                .setSubject((user.getUsername()))
 		                .setIssuedAt(new Date())
-		                .setExpiration(new Date((new Date()).getTime() + jwtExpiration*1000))
+		                .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
 		                .signWith(SignatureAlgorithm.HS512, jwtSecret)
 		                .compact();
     }
