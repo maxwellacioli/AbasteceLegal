@@ -9,8 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -37,6 +40,37 @@ public class VehicleController {
     public Page<Vehicle> findByUserID(@PathVariable (value = "userId") Long userId,
                                       Pageable pageable) {
         return vehicleRepository.findByUserId(userId, pageable);
+    }
+
+    @PutMapping("/users/vehicles/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> selectedVehicle(@AuthenticationPrincipal User user,
+                                             @PathVariable (value = "id") Long vehicleId) {
+
+        Optional<Vehicle> hasSelected = vehicleRepository.findByUserIdAndSelected(user.getId(), true);
+        Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, user.getId());
+
+        if(hasSelected.isPresent()) {
+            if(vehicle.isPresent()) {
+                hasSelected.get().setSelected(false);
+                vehicleRepository.save(hasSelected.get());
+
+                vehicle.get().setSelected(true);
+                Vehicle saved = vehicleRepository.save(vehicle.get());
+
+                return ResponseEntity.ok().body(saved);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            if(vehicle.isPresent()) {
+                vehicle.get().setSelected(true);
+                Vehicle saved = vehicleRepository.save(vehicle.get());
+                return ResponseEntity.ok().body(saved);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
     }
 
     @PostMapping("/users/{userId}/vehicles")

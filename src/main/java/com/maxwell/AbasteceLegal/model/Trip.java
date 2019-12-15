@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity(name = "trips")
@@ -17,21 +19,28 @@ public class Trip {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private Date date;
 
+    @NotNull
     private float tripDistance;
 
+    @NotNull
     private float fuelQuantity;
 
+    @NotNull
     private float fuelConsumption;
 
+
     @Enumerated(EnumType.STRING)
+    @NotNull
     private FuelType fuelType;
 
     @Enumerated(EnumType.STRING)
-
+    @NotNull
     private City city;
 
+    @NotNull
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

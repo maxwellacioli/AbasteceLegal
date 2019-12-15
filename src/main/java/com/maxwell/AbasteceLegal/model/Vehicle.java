@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity(name = "vehicles")
 @Getter
@@ -16,17 +18,20 @@ public class Vehicle {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private FuelType fuelType;
-
+    @NotNull
     @Enumerated(EnumType.STRING)
     private VehicleType vehicleType;
 
+    @NotNull
     private String model;
 
+    @NotNull
     private String licensePlate;
 
+    @NotNull
     private float currentTotalDistance;
+
+    private boolean selected;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
