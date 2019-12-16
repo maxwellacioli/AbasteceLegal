@@ -40,7 +40,6 @@ public class Trip {
     @NotNull
     private City city;
 
-    @NotNull
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -31,8 +31,6 @@ public class Vehicle {
     @NotNull
     private float currentTotalDistance;
 
-    private boolean selected;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore

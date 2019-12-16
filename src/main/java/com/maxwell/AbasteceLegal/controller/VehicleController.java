@@ -47,29 +47,14 @@ public class VehicleController {
     public ResponseEntity<?> selectedVehicle(@AuthenticationPrincipal User user,
                                              @PathVariable (value = "id") Long vehicleId) {
 
-        Optional<Vehicle> hasSelected = vehicleRepository.findByUserIdAndSelected(user.getId(), true);
         Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, user.getId());
 
-        if(hasSelected.isPresent()) {
-            if(vehicle.isPresent()) {
-                hasSelected.get().setSelected(false);
-                vehicleRepository.save(hasSelected.get());
-
-                vehicle.get().setSelected(true);
-                Vehicle saved = vehicleRepository.save(vehicle.get());
-
-                return ResponseEntity.ok().body(saved);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+        if(vehicle.isPresent()) {
+            user.setPrincipalId(vehicleId);
+            userRepository.save(user);
+            return ResponseEntity.ok().build();
         } else {
-            if(vehicle.isPresent()) {
-                vehicle.get().setSelected(true);
-                Vehicle saved = vehicleRepository.save(vehicle.get());
-                return ResponseEntity.ok().body(saved);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+            return ResponseEntity.badRequest().build();
         }
     }
 

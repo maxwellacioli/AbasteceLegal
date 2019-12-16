@@ -19,6 +19,7 @@ create table users
     name varchar(50),
     password varchar(100),
     username varchar(50),
+    principal_id int8,
     primary key (id)
 );
 

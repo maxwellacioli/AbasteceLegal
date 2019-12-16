@@ -1,6 +1,7 @@
 package com.maxwell.AbasteceLegal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
@@ -43,23 +45,25 @@ public class User implements Serializable, UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotNull
     @Size(min=3, max = 50)
     private String name;
 
-    @NotBlank
+    @NotNull
     @Size(min=3, max = 50)
     private String username;
 
     @NaturalId
-    @NotBlank
+    @NotNull
     @Size(max = 50)
     @Email
     private String email;
 
-    @NotBlank
+    @NotNull
     @Size(min=6, max = 100)
     private String password;
+
+    private Long principalId;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", 
