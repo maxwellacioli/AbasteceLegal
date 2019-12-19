@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Long> {
+
+    Page<Trip> findByIdAndVehicleId(Long tripId, Long vehicleId, Pageable pageable);
     Page<Trip> findByVehicleId(Long vehicleId, Pageable pageable);
 }
