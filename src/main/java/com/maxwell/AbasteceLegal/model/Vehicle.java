@@ -29,7 +29,7 @@ public class Vehicle {
     private String licensePlate;
 
     @NotNull
-    private float currentTotalDistance;
+    private float totalDistance;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)

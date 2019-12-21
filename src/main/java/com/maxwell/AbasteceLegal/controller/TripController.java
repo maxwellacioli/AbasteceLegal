@@ -45,14 +45,14 @@ public class TripController {
     @GetMapping("/vehicles/{vehicleId}/trips/{tripId}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Trip> findByIdAndVehicleId(@AuthenticationPrincipal User user,
-                                                        @PathVariable(value = "vehicleId") Long vehicleId,
-                                                        @PathVariable(value = "tripId") Long tripId) {
+                                                     @PathVariable(value = "vehicleId") Long vehicleId,
+                                                     @PathVariable(value = "tripId") Long tripId) {
 
         Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, user.getId());
 
-        if(vehicle.isPresent()) {
+        if (vehicle.isPresent()) {
             Optional<Trip> trip = tripRepository.findByIdAndVehicleId(tripId, vehicleId);
-            if(trip.isPresent()) {
+            if (trip.isPresent()) {
                 return ResponseEntity.ok().body(trip.get());
             } else {
                 return ResponseEntity.notFound().build();
@@ -65,14 +65,14 @@ public class TripController {
     @DeleteMapping("/vehicles/{vehicleId}/trips/{tripId}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Trip> deleteByIdAndVehicleId(@AuthenticationPrincipal User user,
-                                                     @PathVariable(value = "vehicleId") Long vehicleId,
-                                                     @PathVariable(value = "tripId") Long tripId) {
+                                                       @PathVariable(value = "vehicleId") Long vehicleId,
+                                                       @PathVariable(value = "tripId") Long tripId) {
 
         Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, user.getId());
 
-        if(vehicle.isPresent()) {
+        if (vehicle.isPresent()) {
             Optional<Trip> trip = tripRepository.findByIdAndVehicleId(tripId, vehicleId);
-            if(trip.isPresent()) {
+            if (trip.isPresent()) {
                 tripRepository.delete(trip.get());
                 return ResponseEntity.ok().build();
             } else {
@@ -92,6 +92,11 @@ public class TripController {
             trip.setFuelConsumption(fuelConsumptionCalculator(trip.getTripDistance(), trip.getFuelQuantity()));
             trip.setVehicle(vehicle);
             Trip tripSaved = tripRepository.save(trip);
+
+            //Updating current total distance
+            vehicle.setTotalDistance(vehicle.getTotalDistance() + trip.getTripDistance());
+            vehicleRepository.save(vehicle);
+
             return ResponseEntity.ok().body(tripSaved);
         }).orElse(ResponseEntity.notFound().build());
     }
