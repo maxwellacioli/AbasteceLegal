@@ -28,9 +28,7 @@ public class Trip {
     @NotNull
     private float fuelQuantity;
 
-    @NotNull
     private float fuelConsumption;
-
 
     @Enumerated(EnumType.STRING)
     @NotNull
