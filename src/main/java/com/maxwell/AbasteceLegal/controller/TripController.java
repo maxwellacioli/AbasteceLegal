@@ -1,13 +1,18 @@
 package com.maxwell.AbasteceLegal.controller;
 
 import com.maxwell.AbasteceLegal.model.Trip;
+import com.maxwell.AbasteceLegal.model.User;
+import com.maxwell.AbasteceLegal.model.Vehicle;
 import com.maxwell.AbasteceLegal.repository.TripRepository;
 import com.maxwell.AbasteceLegal.repository.VehicleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -32,15 +37,56 @@ public class TripController {
 
     @GetMapping("/vehicles/{vehicleId}/trips")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public Page<Trip> findAllTripsByVehicleId(@PathVariable (value = "vehicleId") Long vehicleId,
+    public Page<Trip> findAllTripsByVehicleId(@PathVariable(value = "vehicleId") Long vehicleId,
                                               Pageable pageable) {
         return tripRepository.findByVehicleId(vehicleId, pageable);
+    }
+
+    @GetMapping("/vehicles/{vehicleId}/trips/{tripId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Trip> findByIdAndVehicleId(@AuthenticationPrincipal User user,
+                                                        @PathVariable(value = "vehicleId") Long vehicleId,
+                                                        @PathVariable(value = "tripId") Long tripId) {
+
+        Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, user.getId());
+
+        if(vehicle.isPresent()) {
+            Optional<Trip> trip = tripRepository.findByIdAndVehicleId(tripId, vehicleId);
+            if(trip.isPresent()) {
+                return ResponseEntity.ok().body(trip.get());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/vehicles/{vehicleId}/trips/{tripId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Trip> deleteByIdAndVehicleId(@AuthenticationPrincipal User user,
+                                                     @PathVariable(value = "vehicleId") Long vehicleId,
+                                                     @PathVariable(value = "tripId") Long tripId) {
+
+        Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, user.getId());
+
+        if(vehicle.isPresent()) {
+            Optional<Trip> trip = tripRepository.findByIdAndVehicleId(tripId, vehicleId);
+            if(trip.isPresent()) {
+                tripRepository.delete(trip.get());
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
     @PostMapping("/vehicles/{vehicleId}/trips")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Trip> createTrip(@PathVariable (value = "vehicleId") Long vehicleId,
+    public ResponseEntity<Trip> createTrip(@PathVariable(value = "vehicleId") Long vehicleId,
                                            @RequestBody Trip trip) {
         return vehicleRepository.findById(vehicleId).map(vehicle -> {
             trip.setFuelConsumption(fuelConsumptionCalculator(trip.getTripDistance(), trip.getFuelQuantity()));
@@ -61,7 +107,7 @@ public class TripController {
     }
 
     private float fuelConsumptionCalculator(float tripDistance, float fuelQuantity) {
-        return tripDistance/fuelQuantity;
+        return tripDistance / fuelQuantity;
     }
 
 }

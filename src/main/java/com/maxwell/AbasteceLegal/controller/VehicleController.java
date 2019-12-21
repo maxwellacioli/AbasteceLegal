@@ -58,6 +58,36 @@ public class VehicleController {
         }
     }
 
+    @GetMapping("/users/vehicles/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> getVehicleById(@AuthenticationPrincipal User user,
+                                             @PathVariable (value = "id") Long vehicleId) {
+
+        Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, user.getId());
+
+        if(vehicle.isPresent()) {
+            return ResponseEntity.ok().body(vehicle.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/users/vehicles/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> deleteVehicleById(@AuthenticationPrincipal User user,
+                                            @PathVariable (value = "id") Long vehicleId) {
+
+        Long userId = user.getId();
+        Optional<Vehicle> vehicle = vehicleRepository.findByIdAndUserId(vehicleId, userId);
+
+        if(vehicle.isPresent()) {
+            vehicleRepository.delete(vehicle.get());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/users/{userId}/vehicles")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity create(@PathVariable (value = "userId") Long userId,
