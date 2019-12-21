@@ -41,7 +41,7 @@ create table trips
 create table vehicles
 (
     id  bigserial not null,
-    current_total_distance float4 not null,
+    total_distance float4 not null,
     fuel_type varchar(255),
     license_plate varchar(255),
     model varchar(255),
